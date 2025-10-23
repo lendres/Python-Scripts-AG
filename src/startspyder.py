@@ -40,21 +40,15 @@ class StartSpyder(BaseScript):
         )
         
         if self._is_windows:
-            os.path.join(spyder_path, r'Scripts/spyder.exe')
+            spyder_path = os.path.join(spyder_path, r'Scripts/spyder.exe')
         else:
-            os.path.join(spyder_path, r'bin/spyder')
+            spyder_path = os.path.join(spyder_path, r'bin/spyder')
             
         return spyder_path
     
-    def _ensure_spyder_installed(self, spyder_path: str):
-        
+    def _check_spyder_installed(self, spyder_path: str):
         if not os.path.exists(spyder_path):
-            python_path = self.get_python_path(self._arguments.environment)
-            self.run_command(
-                command=python_path,
-                parameters=('-m', 'pip', 'install', 'spyder'),
-                show_output=True
-            )
+            raise Exception('Spyder must be installed in the environment.')
     
     def _launch_spyder(self, spyder_path: str, spyder_args: list[str] | None=None) -> int:
         if spyder_args is None:
@@ -71,6 +65,7 @@ class StartSpyder(BaseScript):
             raise Exception("Must pass environment to activate.")
 
         spyder_path = self._get_spyder_path()
+        self._check_spyder_installed(spyder_path)
         self._launch_spyder(spyder_path)
 
 
