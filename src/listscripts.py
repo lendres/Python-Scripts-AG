@@ -28,6 +28,8 @@ class ListScripts(BaseScript):
                 and not script_path.name.startswith(('.', '_'))
                 and not (self._is_windows and script_path.suffix == ".sh")
                 and not (not self._is_windows and script_path.suffix == ".bat")
+                and not script_path.suffix == ".xml"
+                and not script_path.suffix == ".template"
             ):
 
                 print(script_path.with_suffix('').name)
