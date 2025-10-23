@@ -33,7 +33,30 @@ class StartSpyder(BaseScript):
 
         return super().parse_arguments()
     
-    def launch_spyder(self, spyder_path: str, spyder_args: list[str] | None=None) -> int:
+    def _get_spyder_path(self):
+        spyder_path = os.path.join(
+            self._variables.python_environments_path, 
+            self._arguments.environment_name
+        )
+        
+        if self._is_windows:
+            os.path.join(spyder_path, r'Scripts/spyder.exe')
+        else:
+            os.path.join(spyder_path, r'bin/spyder')
+            
+        return spyder_path
+    
+    def _ensure_spyder_installed(self, spyder_path: str):
+        
+        if not os.path.exists(spyder_path):
+            python_path = self.get_python_path(self._arguments.environment)
+            self.run_command(
+                command=python_path,
+                parameters=('-m', 'pip', 'install', 'spyder'),
+                show_output=True
+            )
+    
+    def _launch_spyder(self, spyder_path: str, spyder_args: list[str] | None=None) -> int:
         if spyder_args is None:
             spyder_args = []
         
@@ -43,16 +66,12 @@ class StartSpyder(BaseScript):
         )
 
     def run(self):
-        if self._arguments.environment_name is None:
+        # This checks that the environment argument was passed and that it already exists.
+        if self.existing_environment(self._arguments.environment_name) is None:
             raise Exception("Must pass environment to activate.")
 
-        spyder_path = os.path.join(
-            self._variables.python_environments_path, 
-            self._arguments.environment_name, 
-            "Scripts/spyder.exe"
-        )
-        
-        self.launch_spyder(spyder_path)
+        spyder_path = self._get_spyder_path()
+        self._launch_spyder(spyder_path)
 
 
 if __name__ == '__main__':
