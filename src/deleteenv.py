@@ -31,5 +31,6 @@ class DeleteEnv(BaseScript):
         
         rmtree(os.path.join(self._variables.python_environments_path, self._arguments.environment_name))
 
+
 if __name__ == '__main__':
     DeleteEnv()
