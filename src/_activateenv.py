@@ -46,7 +46,19 @@ class ActivateEnv(BaseScript):
             self._variables.activate_relative_path
         )
 
-        if not self._is_windows:
+        if self._is_windows:
+            # Calling `activate.bat` from subprocess doesn't propagate environment to the terminal.
+
+            if not self._arguments.spawn_shell:
+                # Solving by printing to stdout, to be captured by a `call` from a batch script.
+                print(activate_path, file=sys.stdout)
+
+            else:
+                # Solving by spawning a new shell that starts running `activate.bat`.
+                # Exit with `exit` instead of usual `deactivate`.
+                self.run_command(command='cmd', parameters=('/k', activate_path), show_output=True)
+
+        else:
             # Can't `source` from within Python.
 
             if not self._arguments.spawn_shell:
@@ -61,18 +73,6 @@ class ActivateEnv(BaseScript):
                     parameters=('bash', '--rcfile', activate_path),
                     show_output=True
                 )
-
-        else:
-            # Calling `activate.bat` from subprocess doesn't propagate environment to the terminal.
-
-            if not self._arguments.spawn_shell:
-                # Solving by printing to stdout, to be captured by a `call` from a batch script.
-                print(activate_path, file=sys.stdout)
-
-            else:
-                # Solving by spawning a new shell that starts running `activate.bat`.
-                # Exit with `exit` instead of usual `deactivate`.
-                self.run_command(command='cmd', parameters=('/k', activate_path), show_output=True)
 
 if __name__ == '__main__':
     ActivateEnv()
