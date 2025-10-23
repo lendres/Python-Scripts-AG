@@ -3,6 +3,7 @@
 import platform
 import subprocess
 import sys
+import os
 from abc import ABC, abstractmethod
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from pathlib import Path
@@ -88,6 +89,13 @@ class BaseScript(ABC):
             command=python_path, 
             parameters=('-c', 'import platform; print(platform.python_version())')
         )
+    
+    def get_python_path(self, environment_name):
+        return os.path.join(
+            self._variables.python_environments_path, 
+            environment_name,
+            self._variables.python_relative_path
+        ) if self._arguments.environment is not None else 'python'
     
     @staticmethod
     def get_script_in_path(script_name):
