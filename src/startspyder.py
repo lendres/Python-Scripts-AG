@@ -3,8 +3,6 @@
 
 import os
 import sys
-from pathlib import Path
-import subprocess
 
 from _basescript import BaseScript
 
