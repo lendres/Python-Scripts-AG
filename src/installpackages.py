@@ -2,6 +2,7 @@
 # Obtained from https://github.com/agurwicz/scripts.
 
 import os
+import textwrap
 
 from _basescript import BaseScript
 
@@ -11,6 +12,14 @@ class InstallPackages(BaseScript):
     @property
     def _description(self):
         return 'Installs and upgrades packages in Python environment.'
+    
+    @property
+    def _epilog(self):
+        return textwrap.dedent('''
+            Examples:
+                isntallpackages pandas
+                isntallpackages -e env "pandas, matplotlib"
+        ''')
 
     @property
     def _variables_to_check(self):
@@ -20,7 +29,7 @@ class InstallPackages(BaseScript):
 
         self._argument_parser.add_argument(
             'packages',
-            help='list of packages to install and upgrade (accepts versions with \"package==version\")',
+            help='a string of a comma separated list of packages to install and upgrade (accepts versions with \"package==version\")',
             type=lambda packages: packages.split(',')
         )
 

@@ -4,10 +4,15 @@ import platform
 import subprocess
 import sys
 from abc import ABC, abstractmethod
-from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
+from argparse import ArgumentDefaultsHelpFormatter, RawDescriptionHelpFormatter, ArgumentParser, Namespace
 from pathlib import Path
 from shutil import which
 from xml.etree import ElementTree
+
+
+class SmartFormatter(ArgumentDefaultsHelpFormatter, RawDescriptionHelpFormatter):
+    # Required to pint the epilog as multiple lines using textwrap.
+    pass
 
 
 class BaseScript(ABC):
@@ -16,8 +21,9 @@ class BaseScript(ABC):
 
         self.__filter_exceptions()
         self._argument_parser = ArgumentParser(
-            description=self._description, 
-            formatter_class=ArgumentDefaultsHelpFormatter
+            description=self._description,
+            epilog=self._epilog,
+            formatter_class=SmartFormatter
         )
         
         self._variables = self.__get_and_check_variables(variables_to_check=self._variables_to_check)
@@ -29,6 +35,10 @@ class BaseScript(ABC):
     @abstractmethod
     def _description(self):
         pass
+        
+    @property
+    def _epilog(self):
+        return None
 
     @property
     @abstractmethod
