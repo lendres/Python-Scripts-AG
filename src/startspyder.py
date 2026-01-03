@@ -31,11 +31,14 @@ class StartSpyder(BaseScript):
 
         return super().parse_arguments()
     
-    def _get_spyder_path(self):
-        spyder_path = os.path.join(
+    def _get_env_path(self):
+        return os.path.join(
             self._variables.python_environments_path, 
             self._arguments.environment_name
         )
+    
+    def _get_spyder_path(self):
+        spyder_path = self._get_env_path()
         
         if self._is_windows:
             spyder_path = os.path.join(spyder_path, r'Scripts/spyder.exe')
@@ -51,10 +54,16 @@ class StartSpyder(BaseScript):
     def _launch_spyder(self, spyder_path: str, spyder_args: list[str] | None=None) -> int:
         if spyder_args is None:
             spyder_args = []
+            
+        # For Spyder to have separate PYTHONPATH management, it needs a separate configuration file
+        # for each environment. It cannot be done automatically by Spyder so we have to pass an argument
+        # to tell Spyder where to retrieve/store its configuration file.
+        configFile = self._get_env_path() + "/.spyder-config"
+        args = ["--conf-dir", configFile] + spyder_args
         
         self.open_command(
             command=spyder_path,
-            parameters=spyder_args
+            parameters=args
         )
 
     def run(self):
