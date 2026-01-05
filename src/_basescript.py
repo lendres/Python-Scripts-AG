@@ -160,36 +160,28 @@ class BaseScript(ABC):
         print('Opened {}'.format(file_path), file=sys.stdout)
 
     def existing_environment(self, environment_name):
-        
-        def __check_file(relative_path):
-            return Path(self._variables.python_environments_path).joinpath(
-                environment_name, 
-                relative_path
-            ).is_file()
-
-        if (
-            not __check_file(relative_path=self._variables.python_relative_path) 
-            or not __check_file(relative_path=self._variables.activate_relative_path)
-        ):
+        if (not self.__existing_environment(environment_name)):
             raise Exception('Environment \"{}\" does not exist.'.format(environment_name))
         
         return environment_name
         
     def nonexistent_environment(self, environment_name):
+        if (self.__existing_environment(environment_name)):
+            raise Exception('Environment \"{}\" already exists.'.format(environment_name))
+        
+        return environment_name
     
+    def __existing_environment(self, environment_name):
+        
         def __check_file(relative_path):
             return Path(self._variables.python_environments_path).joinpath(
                 environment_name, 
                 relative_path
             ).is_file()
 
-        if (
-            __check_file(relative_path=self._variables.python_relative_path) 
+        return \
+            __check_file(relative_path=self._variables.python_relative_path) \
             or __check_file(relative_path=self._variables.activate_relative_path)
-        ):
-            raise Exception('Environment \"{}\" already exists.'.format(environment_name))
-        
-        return environment_name
     
     @staticmethod
     def __filter_exceptions():
