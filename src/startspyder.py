@@ -33,7 +33,7 @@ class StartSpyder(BaseScript):
     
     def _get_env_path(self):
         return os.path.join(
-            self._variables.python_environments_path, 
+            self._variables.python_environments_path,
             self._arguments.environment_name
         )
     
@@ -41,25 +41,26 @@ class StartSpyder(BaseScript):
         spyder_path = self._get_env_path()
         
         if self._is_windows:
-            spyder_path = os.path.join(spyder_path, r'Scripts/spyder.exe')
+            spyder_path = os.path.join(spyder_path, 'Scripts', 'spyder.exe')
         else:
-            spyder_path = os.path.join(spyder_path, r'bin/spyder')
+            spyder_path = os.path.join(spyder_path, 'bin', 'spyder')
             
         return spyder_path
-    
-    def _check_spyder_installed(self, spyder_path: str):
+
+    @staticmethod
+    def _check_spyder_installed(spyder_path):
         if not os.path.exists(spyder_path):
             raise Exception('Spyder must be installed in the environment.')
     
-    def _launch_spyder(self, spyder_path: str, spyder_args: list[str] | None=None) -> int:
+    def _launch_spyder(self, spyder_path, spyder_args=None):
         if spyder_args is None:
             spyder_args = []
             
         # For Spyder to have separate PYTHONPATH management, it needs a separate configuration file
         # for each environment. It cannot be done automatically by Spyder so we have to pass an argument
         # to tell Spyder where to retrieve/store its configuration file.
-        configFile = self._get_env_path() + "/.spyder-config"
-        args = ["--conf-dir", configFile] + spyder_args
+        configFile = os.path.join(self._get_env_path(), '.spyder-config')
+        args = ['--conf-dir', configFile] + spyder_args
         
         self.open_command(
             command=spyder_path,
@@ -68,12 +69,12 @@ class StartSpyder(BaseScript):
 
     def run(self):
         # This checks that the environment argument was passed and that it already exists.
-        if self.existing_environment(self._arguments.environment_name) is None:
-            raise Exception("Must pass environment to activate.")
+        if self.existing_environment(environment_name=self._arguments.environment_name) is None:
+            raise Exception('Must pass environment to activate.')
 
         spyder_path = self._get_spyder_path()
-        self._check_spyder_installed(spyder_path)
-        self._launch_spyder(spyder_path)
+        self._check_spyder_installed(spyder_path=spyder_path)
+        self._launch_spyder(spyder_path=spyder_path)
 
 
 if __name__ == '__main__':
