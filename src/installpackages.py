@@ -50,7 +50,7 @@ class InstallPackages(BaseScript):
     def run(self):
         
         if self._arguments.activate and self._arguments.environment is None:
-            raise Exception("Must pass environment to activate.")
+            raise Exception('Must pass environment to activate.')
 
         python_path = os.path.join(
             self._variables.python_environments_path, 
