@@ -160,13 +160,13 @@ class BaseScript(ABC):
         print('Opened {}'.format(file_path), file=sys.stdout)
 
     def existing_environment(self, environment_name):
-        if (not self.__existing_environment(environment_name)):
+        if (not self.__existing_environment(environment_name=environment_name)):
             raise Exception('Environment \"{}\" does not exist.'.format(environment_name))
         
         return environment_name
         
     def nonexistent_environment(self, environment_name):
-        if (self.__existing_environment(environment_name)):
+        if (self.__existing_environment(environment_name=environment_name)):
             raise Exception('Environment \"{}\" already exists.'.format(environment_name))
         
         return environment_name
